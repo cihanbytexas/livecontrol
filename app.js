@@ -6,7 +6,7 @@ const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const container = document.getElementById('devices-container');
 
 let devicesData = [];
-const mapInstances = {}; // Harita, marker ve daireleri hafızada tutar
+const mapInstances = {}; 
 
 function formatTimeAgo(dateString) {
     if (!dateString) return 'Bilinmiyor';
@@ -26,10 +26,9 @@ function checkOnlineStatus(sonGorulme) {
     const date = new Date(sonGorulme);
     const now = new Date();
     const diffInSeconds = Math.floor((now - date) / 1000);
-    return diffInSeconds <= 120; // 2 dakika
+    return diffInSeconds <= 120;
 }
 
-// 1. Cihaz Kartı HTML Yapısı (Sıfırdan çizerken kullanılır)
 function generateDeviceHTML(device) {
     const isOnline = checkOnlineStatus(device.son_gorulme);
     const statusClass = isOnline ? 'status-online' : 'status-offline';
@@ -86,7 +85,6 @@ function generateDeviceHTML(device) {
     `;
 }
 
-// 2. Haritayı İlk Kez Oluşturma
 function initMap(device) {
     if (device.son_enlem == null || device.son_boylam == null) return;
     
@@ -94,12 +92,12 @@ function initMap(device) {
     const mapEl = document.getElementById(mapId);
     if (!mapEl) return;
 
-    mapEl.innerHTML = ''; // İçindeki "Henüz konum alınamadı" yazısını sil
+    mapEl.innerHTML = ''; 
 
     const map = L.map(mapId).setView([device.son_enlem, device.son_boylam], 16);
     
-    // Koyu Tema Harita Katmanı (CartoDB Dark Matter)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    // Standart, API Key gerektirmeyen OpenStreetMap Katmanı
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
@@ -120,15 +118,13 @@ function initMap(device) {
     mapInstances[device.id] = { map, marker, circle, isCentered: true };
 }
 
-// 3. Mevcut Arayüzü ve Harita Marker'ını Güncelleme (Sayfa Sıfırlanmaz)
 function updateDeviceDOM(device) {
     const card = document.getElementById(`device-${device.id}`);
     if (!card) {
-        renderDevices(); // Kart yoksa tam render yap
+        renderDevices(); 
         return;
     }
 
-    // Durum rozeti
     const isOnline = checkOnlineStatus(device.son_gorulme);
     const badge = document.getElementById(`status-badge-${device.id}`);
     if (badge) {
@@ -136,30 +132,24 @@ function updateDeviceDOM(device) {
         badge.innerHTML = `${isOnline ? '🟢' : '🔴'} ${isOnline ? 'Çevrimiçi' : 'Çevrimdışı'}`;
     }
 
-    // Temel Bilgiler
     document.getElementById(`det-pil-${device.id}`).innerText = `Pil: ${device.pil_yuzdesi != null ? `%${device.pil_yuzdesi}` : '-'}`;
     document.getElementById(`det-sarj-${device.id}`).innerText = `Şarj: ${device.sarj_oluyor ? 'Evet' : 'Hayır'}`;
     document.getElementById(`det-ag-${device.id}`).innerText = `Ağ: ${device.ag_tipi || '-'}`;
     document.getElementById(`det-sicaklik-${device.id}`).innerText = `Sıc: ${device.pil_sicakligi != null ? `${device.pil_sicakligi}°C` : '-'}`;
 
-    // Konum Bilgileri
     const hasLoc = device.son_enlem != null && device.son_boylam != null;
     document.getElementById(`loc-lat-${device.id}`).innerText = hasLoc ? device.son_enlem.toFixed(6) : '-';
     document.getElementById(`loc-lng-${device.id}`).innerText = hasLoc ? device.son_boylam.toFixed(6) : '-';
     document.getElementById(`loc-acc-${device.id}`).innerText = device.son_konum_dogrulugu ? `±${device.son_konum_dogrulugu.toFixed(1)} m` : '-';
     
-    // Alt Bilgiler
     document.getElementById(`loc-time-${device.id}`).innerText = formatTimeAgo(device.guncellenme_tarihi);
     document.getElementById(`footer-seen-${device.id}`).innerText = `🕐 Son görülme: ${formatTimeAgo(device.son_gorulme)}`;
     document.getElementById(`footer-update-${device.id}`).innerText = `🔄 Son iletişim: ${formatTimeAgo(device.guncellenme_tarihi)}`;
 
-    // Harita Marker Güncellemesi
     if (hasLoc) {
         if (!mapInstances[device.id]) {
-            // Harita daha önce yüklenmediyse (Cihaz yeni konum gönderdiyse) başlat
             initMap(device);
         } else {
-            // Harita varsa sadece yeri değiştir (Haritayı sürekli merkeze sabitlemez)
             const { marker, circle } = mapInstances[device.id];
             const newLatLng = [device.son_enlem, device.son_boylam];
             
@@ -174,14 +164,12 @@ function updateDeviceDOM(device) {
     }
 }
 
-// 4. Tüm Kartları En Baştan Render Etme (İlk Yükleme ve Insert/Delete için)
 function renderDevices() {
     if (devicesData.length === 0) {
         container.innerHTML = '<p class="loading">Henüz cihaz bulunmuyor.</p>';
         return;
     }
 
-    // Eski harita verilerini bellekten temizle
     Object.keys(mapInstances).forEach(id => {
         if (mapInstances[id] && mapInstances[id].map) {
             mapInstances[id].map.remove();
@@ -191,13 +179,11 @@ function renderDevices() {
 
     container.innerHTML = devicesData.map(device => generateDeviceHTML(device)).join('');
     
-    // DOM oluştuktan 100ms sonra haritaları çiz (Gri ekran hatasını engeller)
     setTimeout(() => {
         devicesData.forEach(device => initMap(device));
     }, 100);
 }
 
-// Sadece sayfadaki "... saniye önce" ibarelerini güncelleyen performanslı döngü
 function updateAllTimeStrings() {
     devicesData.forEach(device => {
         const locTime = document.getElementById(`loc-time-${device.id}`);
@@ -217,7 +203,6 @@ function updateAllTimeStrings() {
     });
 }
 
-// İlk verileri çek
 async function fetchDevices() {
     const { data, error } = await client
         .from('cihazlar')
@@ -234,7 +219,6 @@ async function fetchDevices() {
     renderDevices();
 }
 
-// Supabase Realtime 
 function setupRealtime() {
     client
         .channel('public:cihazlar')
@@ -246,7 +230,7 @@ function setupRealtime() {
                 const index = devicesData.findIndex(d => d.id === payload.new.id);
                 if (index !== -1) {
                     devicesData[index] = payload.new;
-                    updateDeviceDOM(payload.new); // Paneli sıfırlamadan sadece değerleri günceller
+                    updateDeviceDOM(payload.new); 
                 } else {
                     devicesData.push(payload.new);
                     renderDevices();
@@ -259,9 +243,7 @@ function setupRealtime() {
         .subscribe();
 }
 
-// Zaman damgalarını her 15 saniyede bir paneli yormadan günceller
 setInterval(updateAllTimeStrings, 15000);
 
-// Sistemi başlat
 fetchDevices();
 setupRealtime();

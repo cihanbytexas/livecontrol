@@ -122,7 +122,12 @@ main {
     justify-content: center;
     color: var(--text-secondary);
     overflow: hidden;
-    z-index: 1; /* Leaflet araçlarının başlıkların üstüne çıkmasını önler */
+    z-index: 1; 
+}
+
+/* Standart OpenStreetMap'i Koyu Temaya Çevirme Filtresi */
+.leaflet-tile {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
 }
 
 /* Harita Altı Konum Detayları */
@@ -166,7 +171,6 @@ main {
     margin-top: 40px;
 }
 
-/* Mobil Uyumluluk */
 @media (max-width: 450px) {
     .location-details {
         grid-template-columns: 1fr;

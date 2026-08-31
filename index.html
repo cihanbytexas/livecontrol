@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LiveControl Web Panel</title>
     
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
@@ -18,16 +23,40 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
-    <header>
-        <h1>LiveControl</h1>
-        <p>Cihaz Yönetim Paneli</p>
+    <header class="glass-header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <div>
+                    <h1>LiveControl</h1>
+                    <p>Gelişmiş Cihaz Yönetim Paneli</p>
+                </div>
+            </div>
+        </div>
     </header>
     
     <main>
         <div id="devices-container" class="devices-grid">
-            <p class="loading">Cihazlar yükleniyor...</p>
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>Cihazlar senkronize ediliyor...</p>
+            </div>
         </div>
     </main>
+
+    <!-- Bildirim Modalı -->
+    <div id="notifications-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔔 Cihaz Bildirimleri</h2>
+                <button class="close-btn" onclick="closeNotifications()">✕</button>
+            </div>
+            <div class="modal-body" id="modal-notifications-list">
+                <!-- Bildirimler buraya yüklenecek -->
+                <p class="text-muted">Bildirimler yükleniyor...</p>
+            </div>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>

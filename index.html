@@ -5,21 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LiveControl Web Panel</title>
     
-    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
-    <!-- Proje CSS -->
     <link rel="stylesheet" href="style.css">
     
-    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
@@ -51,8 +44,13 @@
                 <h2>🔔 Cihaz Bildirimleri</h2>
                 <button class="close-btn" onclick="closeNotifications()">✕</button>
             </div>
+            
+            <!-- Yatay Kaydırılabilir Filtre Çubuğu -->
+            <div class="modal-filters" id="modal-filters">
+                <!-- Butonlar JS ile dinamik gelecek -->
+            </div>
+
             <div class="modal-body" id="modal-notifications-list">
-                <!-- Bildirimler buraya yüklenecek -->
                 <p class="text-muted">Bildirimler yükleniyor...</p>
             </div>
         </div>
